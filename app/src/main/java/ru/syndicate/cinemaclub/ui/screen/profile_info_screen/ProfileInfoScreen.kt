@@ -1,4 +1,4 @@
-package ru.syndicate.cinemaclub.ui.screen.profile_screen
+package ru.syndicate.cinemaclub.ui.screen.profile_info_screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -33,43 +34,54 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import ru.syndicate.cinemaclub.R
 import ru.syndicate.cinemaclub.ui.screen.auth_screen.AuthScreen
-import ru.syndicate.cinemaclub.ui.screen.profile_screen.components.CustomSwitch
-import ru.syndicate.cinemaclub.ui.screen.profile_screen.components.SettingParam
+import ru.syndicate.cinemaclub.ui.screen.profile_main_screen.components.CustomSwitch
+import ru.syndicate.cinemaclub.ui.screen.profile_main_screen.components.SettingParam
+import ru.syndicate.cinemaclub.ui.screen.safety_screen.SafetyScreen
 import ru.syndicate.cinemaclub.ui.theme.BackgroundColor
 import ru.syndicate.cinemaclub.ui.theme.BlockBlack
 import ru.syndicate.cinemaclub.ui.theme.CustomGray
 import ru.syndicate.cinemaclub.ui.theme.LightGray
 import ru.syndicate.cinemaclub.ui.theme.TextWhite
-import ru.syndicate.cinemaclub.ui.utils.CustomScreen
+import ru.syndicate.cinemaclub.ui.utils.ProfileScreen
 
-class ProfileScreen : CustomScreen {
-
-    override val navBarIndex: Int
-        get() = 3
+class ProfileInfoScreen : ProfileScreen {
 
     override val topBarLabel: String
         get() = "Профиль"
+
+    override val isShowBonusText: Boolean
+        get() = true
 
     @Composable
     override fun Content() {
 
         val navigator = LocalNavigator.currentOrThrow
 
-        ProfileScreenContent(
+        ProfileInfoScreenContent(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(
                     horizontal = 16.dp
                 ),
-            onAuthClick = { navigator.push(AuthScreen()) }
+            onAuthClick = { navigator.push(AuthScreen()) },
+            onClickToSafety = {
+                navigator.push(
+                    SafetyScreen(
+                        onBack = {
+                            navigator.pop()
+                        }
+                    )
+                )
+            }
         )
     }
 }
 
 @Composable
-fun ProfileScreenContent(
+fun ProfileInfoScreenContent(
     modifier: Modifier = Modifier,
-    onAuthClick: () -> Unit = { }
+    onAuthClick: () -> Unit = { },
+    onClickToSafety: () -> Unit = { }
 ) {
 
     // TODO: For test
@@ -93,7 +105,9 @@ fun ProfileScreenContent(
                         top = 16.dp
                     )
                     .clickable {
-
+                        if (isAuth) {
+                            onAuthClick()
+                        }
                     }
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(15.dp))
@@ -239,8 +253,7 @@ fun ProfileScreenContent(
                             .fillMaxWidth()
                             .padding(10.dp),
                         icon = R.drawable.svg_notifications,
-                        textParam = "Уведомления",
-                        onClick = { }
+                        textParam = "Уведомления"
                     )
 
                     SettingParam(
@@ -248,17 +261,18 @@ fun ProfileScreenContent(
                             .fillMaxWidth()
                             .padding(10.dp),
                         icon = R.drawable.svg_cards,
-                        textParam = "Карты",
-                        onClick = { }
+                        textParam = "Карты"
                     )
 
                     SettingParam(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .clickable {
+                                onClickToSafety()
+                            }
                             .padding(10.dp),
                         icon = R.drawable.svg_shield,
-                        textParam = "Безопасность",
-                        onClick = { }
+                        textParam = "Безопасность"
                     )
                 }
             }
@@ -266,64 +280,67 @@ fun ProfileScreenContent(
 
         item {
 
-            Column(
-                modifier = Modifier
-                    .padding(
-                        top = 16.dp
-                    )
-                    .clip(RoundedCornerShape(10.dp))
-                    .fillMaxWidth()
-                    .background(
-                        color = BlockBlack
-                    )
-                    .padding(10.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
+            if (!isAuth) {
 
-                SettingParam(
+                Column(
                     modifier = Modifier
+                        .padding(
+                            top = 16.dp
+                        )
+                        .clip(RoundedCornerShape(10.dp))
                         .fillMaxWidth()
+                        .background(
+                            color = BlockBlack
+                        )
                         .padding(10.dp),
-                    icon = R.drawable.svg_stars,
-                    textParam = "Достижения",
-                    onClick = { }
-                )
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
 
-                SettingParam(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(10.dp),
-                    icon = R.drawable.svg_diversity,
-                    textParam = "Реферальная система",
-                    onClick = { }
-                )
+                    SettingParam(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(10.dp),
+                        icon = R.drawable.svg_stars,
+                        textParam = "Достижения"
+                    )
+
+                    SettingParam(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(10.dp),
+                        icon = R.drawable.svg_diversity,
+                        textParam = "Реферальная система"
+                    )
+                }
             }
         }
 
         item {
 
-            Box(
-                modifier = Modifier
-                    .padding(
-                        top = 16.dp
-                    )
-                    .clip(RoundedCornerShape(10.dp))
-                    .fillMaxWidth()
-                    .background(
-                        color = BlockBlack
-                    )
-                    .padding(10.dp)
-            ) {
+            if (!isAuth) {
 
-                SettingParam(
+                Box(
                     modifier = Modifier
+                        .padding(
+                            top = 16.dp
+                        )
+                        .clip(RoundedCornerShape(10.dp))
                         .fillMaxWidth()
-                        .padding(10.dp),
-                    isLogout = true,
-                    icon = R.drawable.svg_logout,
-                    textParam = "Выход",
-                    onClick = { }
-                )
+                        .background(
+                            color = BlockBlack
+                        )
+                        .padding(10.dp)
+                ) {
+
+                    SettingParam(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(10.dp),
+                        isLogout = true,
+                        icon = R.drawable.svg_logout,
+                        textParam = "Выход"
+                    )
+                }
             }
         }
     }
@@ -331,8 +348,8 @@ fun ProfileScreenContent(
 
 @Preview
 @Composable
-fun PreviewProfileScreen() {
-    ProfileScreenContent(
+private fun PreviewProfileInfoScreen() {
+    ProfileInfoScreenContent(
         modifier = Modifier
             .fillMaxSize()
             .background(

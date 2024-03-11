@@ -13,7 +13,6 @@ import androidx.compose.ui.res.vectorResource
 import cafe.adriel.voyager.navigator.Navigator
 import ru.syndicate.cinemaclub.data.model.BottomNavBarItem
 import ru.syndicate.cinemaclub.ui.theme.CustomGray
-import ru.syndicate.cinemaclub.ui.utils.CustomScreen
 
 @Composable
 fun BottomNavBar(
@@ -35,11 +34,9 @@ fun BottomNavBar(
 
         for (index in items.indices) {
 
-            val currentScreen = navigator.lastItem as CustomScreen
-
             NavBarItem(
                 icon = items[index].icon,
-                isSelected = currentScreen.navBarIndex == items[index].screen.navBarIndex,
+                isSelected = navigator.lastItem.key == items[index].screen.key,
                 onClick = {
                     navigator.replace(items[index].screen)
                 }

@@ -21,20 +21,44 @@ import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
 import ru.syndicate.cinemaclub.ui.theme.BackgroundColor
 import ru.syndicate.cinemaclub.ui.theme.BarColor
-import ru.syndicate.cinemaclub.ui.utils.CustomScreen
 
-class TicketScreen : CustomScreen {
-
-    override val topBarLabel: String
-        get() = "Мои билеты"
+class TicketScreen : Screen {
 
     @Composable
     override fun Content() {
 
-        TicketScreenContent(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-        )
+        ) {
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        color = BarColor
+                    )
+                    .padding(
+                        horizontal = 30.dp,
+                        vertical = 10.dp
+                    )
+                    .statusBarsPadding()
+            ) {
+
+                Text(
+                    text = "Мои билеты",
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp,
+                    color = Color.White
+                )
+            }
+
+            TicketScreenContent(
+                modifier = Modifier
+                    .fillMaxSize()
+            )
+        }
     }
 }
 

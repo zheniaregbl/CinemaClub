@@ -1,9 +1,8 @@
-package ru.syndicate.cinemaclub.ui.screen.auth_screen
+package ru.syndicate.cinemaclub.ui.screen.forget_password_screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,9 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,8 +22,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -34,13 +29,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import ru.syndicate.cinemaclub.R
 import ru.syndicate.cinemaclub.ui.common.CustomTextField
 import ru.syndicate.cinemaclub.ui.extansions.containsUnwantedChar
-import ru.syndicate.cinemaclub.ui.screen.forget_password_screen.ForgetPasswordScreen
+import ru.syndicate.cinemaclub.ui.screen.double_password_screen.DoublePasswordScreen
 import ru.syndicate.cinemaclub.ui.screen.otp_verify_screen.OtpVerifyScreen
-import ru.syndicate.cinemaclub.ui.screen.profile_info_screen.ProfileInfoScreen
-import ru.syndicate.cinemaclub.ui.screen.register_screen.RegisterScreen
 import ru.syndicate.cinemaclub.ui.theme.BackgroundColor
 import ru.syndicate.cinemaclub.ui.theme.BlockBlack
 import ru.syndicate.cinemaclub.ui.theme.CustomBlue
@@ -48,10 +40,10 @@ import ru.syndicate.cinemaclub.ui.theme.CustomGray
 import ru.syndicate.cinemaclub.ui.theme.TextWhite
 import ru.syndicate.cinemaclub.ui.utils.ProfileScreen
 
-class AuthScreen : ProfileScreen {
+class ForgetPasswordScreen : ProfileScreen {
 
     override val topBarLabel: String
-        get() = "Авторизация"
+        get() = "Восстановление пароля"
 
     override val isShowBonusText: Boolean
         get() = false
@@ -61,33 +53,39 @@ class AuthScreen : ProfileScreen {
 
         val navigator = LocalNavigator.currentOrThrow
 
-        AuthScreenContent(
+        ForgetPasswordScreenContent(
             modifier = Modifier
                 .fillMaxSize(),
-            navigateToNext = { navigator.popUntil { it is ProfileInfoScreen } },
-            navigateToRegister = { navigator.push(RegisterScreen()) },
-            onClickForgetPassword = { navigator.push(ForgetPasswordScreen()) }
+            navigateToNext = { email ->
+                navigator.push(
+                    OtpVerifyScreen(
+                        title = "Восстановление пароля",
+                        email = email,
+                        navigateToNext = {
+                            navigator.push(
+                                DoublePasswordScreen(
+                                    title = "Восстановление пароля"
+                                )
+                            )
+                        },
+                        navigateToBack = { navigator.pop() }
+                    )
+                )
+            },
+            navigateToBack = { navigator.pop() }
         )
     }
 }
 
 @Composable
-fun AuthScreenContent(
+fun ForgetPasswordScreenContent(
     modifier: Modifier = Modifier,
-    navigateToNext: () -> Unit = { },
-    navigateToRegister: () -> Unit = { },
-    onClickForgetPassword: () -> Unit = { }
+    navigateToNext: (String) -> Unit = { },
+    navigateToBack: () -> Unit = { }
 ) {
 
     var emailText by remember {
         mutableStateOf("")
-    }
-    var passwordText by remember {
-        mutableStateOf("")
-    }
-
-    var rememberUser by remember {
-        mutableStateOf(false)
     }
 
     Box(
@@ -106,7 +104,7 @@ fun AuthScreenContent(
                     color = BlockBlack
                 )
                 .padding(
-                    horizontal = 20.dp
+                    horizontal = 30.dp
                 )
                 .padding(
                     top = 32.dp,
@@ -118,7 +116,7 @@ fun AuthScreenContent(
             Text(
                 modifier = Modifier
                     .fillMaxWidth(),
-                text = "Авторизация",
+                text = "Восстановление пароля",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp,
@@ -150,106 +148,46 @@ fun AuthScreenContent(
                 hintText = "E-mail"
             )
 
-            Column(
+            Row(
                 modifier = Modifier
                     .fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(5.dp)
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
 
-                CustomTextField(
+                Box(
                     modifier = Modifier
+                        .weight(1f)
+                        .clip(RoundedCornerShape(5.dp))
                         .fillMaxWidth()
-                        .height(45.dp)
-                        .border(
-                            width = 1.5.dp,
-                            color = CustomGray,
-                            shape = RoundedCornerShape(10.dp)
+                        .height(8.dp)
+                        .background(
+                            color = CustomBlue
                         )
-                        .padding(
-                            horizontal = 15.dp,
-                            vertical = 12.dp
-                        ),
-                    isPassword = true,
-                    value = passwordText,
-                    onValueChange = {
-                        if (!it.containsUnwantedChar()) {
-                            passwordText = it
-                        }
-                    },
-                    hintText = "Пароль"
                 )
 
-                Row(
+                Box(
                     modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-
-                    Row(
-                        modifier = Modifier
-                            .padding(
-                                vertical = 3.dp
-                            ),
-                        horizontalArrangement = Arrangement.spacedBy(5.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-
-                        Box(
-                            modifier = Modifier
-                                .size(25.dp)
-                                .clickable(
-                                    interactionSource = MutableInteractionSource(),
-                                    indication = null
-                                ) {
-                                    rememberUser = !rememberUser
-                                },
-                            contentAlignment = Alignment.Center
-                        ) {
-
-                            if (rememberUser) {
-
-                                Icon(
-                                    imageVector = ImageVector.vectorResource(id = R.drawable.svg_checkbox_true),
-                                    contentDescription = null,
-                                    tint = CustomBlue
-                                )
-                            } else {
-
-                                Box(
-                                    modifier = Modifier
-                                        .size(18.dp)
-                                        .border(
-                                            width = 2.dp,
-                                            color = CustomGray,
-                                            shape = RoundedCornerShape(2.dp)
-                                        )
-                                )
-                            }
-                        }
-
-                        Text(
-                            text = "Запомнить меня",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Normal,
-                            fontSize = 14.sp,
-                            color = CustomGray
+                        .weight(1f)
+                        .fillMaxWidth()
+                        .height(8.dp)
+                        .border(
+                            width = 1.dp,
+                            color = CustomBlue,
+                            shape = RoundedCornerShape(5.dp)
                         )
-                    }
+                )
 
-                    Text(
-                        modifier = Modifier
-                            .clickable(
-                                interactionSource = MutableInteractionSource(),
-                                indication = null
-                            ) { onClickForgetPassword() },
-                        text = "Забыли пароль?",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Normal,
-                        fontSize = 14.sp,
-                        color = CustomBlue
-                    )
-                }
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                        .height(8.dp)
+                        .border(
+                            width = 1.dp,
+                            color = CustomBlue,
+                            shape = RoundedCornerShape(5.dp)
+                        )
+                )
             }
 
             Row(
@@ -268,11 +206,11 @@ fun AuthScreenContent(
                             color = CustomBlue,
                             shape = RoundedCornerShape(10.dp)
                         )
-                        .clickable { navigateToRegister() }
+                        .clickable { navigateToBack() }
                         .padding(
                             vertical = 10.dp
                         ),
-                    text = "Регистрация",
+                    text = "Авторизация",
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp,
@@ -288,11 +226,11 @@ fun AuthScreenContent(
                         .background(
                             color = CustomBlue
                         )
-                        .clickable { navigateToNext() }
+                        .clickable { navigateToNext(emailText) }
                         .padding(
                             vertical = 10.dp
                         ),
-                    text = "Вход",
+                    text = "Далее",
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp,
@@ -306,8 +244,8 @@ fun AuthScreenContent(
 
 @Preview
 @Composable
-private fun PreviewAuthScreen() {
-    AuthScreenContent(
+private fun PreviewForgetPasswordScreen() {
+    ForgetPasswordScreenContent(
         modifier = Modifier
             .fillMaxSize()
             .background(

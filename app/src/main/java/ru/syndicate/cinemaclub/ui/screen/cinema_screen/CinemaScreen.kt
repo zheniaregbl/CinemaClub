@@ -19,23 +19,47 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.core.screen.ScreenKey
+import ru.syndicate.cinemaclub.ui.screen.home_screen.HomeScreenContent
 import ru.syndicate.cinemaclub.ui.theme.BackgroundColor
 import ru.syndicate.cinemaclub.ui.theme.BarColor
-import ru.syndicate.cinemaclub.ui.utils.CustomScreen
 
-class CinemaScreen : CustomScreen {
-
-    override val topBarLabel: String
-        get() = "Кинотеатры"
+class CinemaScreen : Screen {
 
     @Composable
     override fun Content() {
 
-        CinemaScreenContent(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-        )
+        ) {
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        color = BarColor
+                    )
+                    .padding(
+                        horizontal = 30.dp,
+                        vertical = 10.dp
+                    )
+                    .statusBarsPadding()
+            ) {
+
+                Text(
+                    text = "Кинотеатры",
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp,
+                    color = Color.White
+                )
+            }
+
+            CinemaScreenContent(
+                modifier = Modifier
+                    .fillMaxSize()
+            )
+        }
     }
 }
 

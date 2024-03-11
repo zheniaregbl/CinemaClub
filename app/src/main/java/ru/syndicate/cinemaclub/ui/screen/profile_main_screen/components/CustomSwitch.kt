@@ -1,4 +1,4 @@
-package ru.syndicate.cinemaclub.ui.screen.profile_screen.components
+package ru.syndicate.cinemaclub.ui.screen.profile_main_screen.components
 
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateDpAsState
@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import ru.syndicate.cinemaclub.ui.theme.CustomBlue
+import ru.syndicate.cinemaclub.ui.theme.CustomGray
 
 @Composable
 fun CustomSwitch(
@@ -65,7 +66,7 @@ fun CustomSwitch(
             .width(buttonWidth)
             .height(buttonHeight)
             .clip(CircleShape)
-            .background(if (value) CustomBlue else Color.LightGray)
+            .background(if (value) CustomBlue else CustomGray)
             .clickable(
                 interactionSource = interactionSource,
                 indication = null

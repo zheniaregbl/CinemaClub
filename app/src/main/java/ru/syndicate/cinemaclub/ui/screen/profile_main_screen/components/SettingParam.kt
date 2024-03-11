@@ -1,4 +1,4 @@
-package ru.syndicate.cinemaclub.ui.screen.profile_screen.components
+package ru.syndicate.cinemaclub.ui.screen.profile_main_screen.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -28,8 +28,7 @@ fun SettingParam(
     modifier: Modifier = Modifier,
     isLogout: Boolean = false,
     icon: Int = R.drawable.svg_shield,
-    textParam: String = "Безопасность",
-    onClick: () -> Unit = { }
+    textParam: String = "Безопасность"
 ) {
 
     Row(
@@ -57,11 +56,7 @@ fun SettingParam(
 
         Icon(
             modifier = Modifier
-                .size(25.dp)
-                .clickable(
-                    interactionSource = MutableInteractionSource(),
-                    indication = null
-                ) { onClick() },
+                .size(25.dp),
             imageVector = ImageVector.vectorResource(id = R.drawable.svg_arrow),
             contentDescription = null,
             tint = CustomGray
