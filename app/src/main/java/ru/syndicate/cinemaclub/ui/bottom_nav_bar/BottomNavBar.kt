@@ -1,6 +1,5 @@
 package ru.syndicate.cinemaclub.ui.bottom_nav_bar
 
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -36,9 +35,11 @@ fun BottomNavBar(
 
         for (index in items.indices) {
 
+            val currentScreen = navigator.lastItem as CustomScreen
+
             NavBarItem(
                 icon = items[index].icon,
-                isSelected = navigator.lastItem.key == items[index].screen.key,
+                isSelected = currentScreen.navBarIndex == items[index].screen.navBarIndex,
                 onClick = {
                     navigator.replace(items[index].screen)
                 }

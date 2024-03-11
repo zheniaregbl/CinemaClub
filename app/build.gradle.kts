@@ -79,9 +79,6 @@ dependencies {
     // Voyager Navigator
     implementation("cafe.adriel.voyager:voyager-navigator:$voyagerVersion")
 
-    // Voyager TabNavigator
-    implementation("cafe.adriel.voyager:voyager-tab-navigator:$voyagerVersion")
-
     // Voyager Transitions
     implementation("cafe.adriel.voyager:voyager-transitions:$voyagerVersion")
 

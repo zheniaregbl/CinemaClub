@@ -27,6 +27,14 @@ val ptSans = FontFamily(
     Font(R.font.ptsans_bold, FontWeight.Bold)
 )
 
+val inter = FontFamily(
+    Font(R.font.inter_light, FontWeight.Light),
+    Font(R.font.inter_regular, FontWeight.Normal),
+    Font(R.font.inter_medium, FontWeight.Medium),
+    Font(R.font.inter_semibold, FontWeight.SemiBold),
+    Font(R.font.inter_bold, FontWeight.Bold)
+)
+
 val Typography = Typography(
     bodyMedium = TextStyle(
         fontFamily = robotoSlab
@@ -36,5 +44,8 @@ val Typography = Typography(
     ),
     titleMedium = TextStyle(
         fontFamily = ptSans
+    ),
+    displayMedium = TextStyle(
+        fontFamily = inter
     )
 )

@@ -8,9 +8,10 @@ import ru.syndicate.cinemaclub.ui.screen.home_screen.HomeScreen
 import ru.syndicate.cinemaclub.ui.screen.cinema_screen.CinemaScreen
 import ru.syndicate.cinemaclub.ui.screen.profile_screen.ProfileScreen
 import ru.syndicate.cinemaclub.ui.screen.ticket_screen.TicketScreen
+import ru.syndicate.cinemaclub.ui.utils.CustomScreen
 
 sealed class BottomNavBarItem(
-    val screen: Screen,
+    val screen: CustomScreen,
     val icon: Int
 ) {
 

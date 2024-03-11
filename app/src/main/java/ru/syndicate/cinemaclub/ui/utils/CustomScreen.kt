@@ -8,4 +8,7 @@ interface CustomScreen : Screen {
 
     val backScreenText: String
         get() = ""
+
+    val navBarIndex: Int
+        get() = 0
 }

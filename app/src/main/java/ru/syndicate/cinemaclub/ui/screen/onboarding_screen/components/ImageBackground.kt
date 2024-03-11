@@ -13,7 +13,6 @@ import ru.syndicate.cinemaclub.R
 
 @Composable
 fun ImageBackground(
-    modifier: Modifier,
     state: Animatable<Float, AnimationVector1D>
 ) {
 

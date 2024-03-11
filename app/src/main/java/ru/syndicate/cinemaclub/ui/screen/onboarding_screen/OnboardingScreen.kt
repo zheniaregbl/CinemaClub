@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.syndicate.cinemaclub.R
 import ru.syndicate.cinemaclub.data.model.OnboardingItemData
@@ -100,8 +101,6 @@ fun OnboardingScreenContent(
     ) {
 
         ImageBackground(
-            modifier = Modifier
-                .fillMaxSize(),
             state = offsetXAnimate
         )
 
