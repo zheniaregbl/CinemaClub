@@ -1,5 +1,6 @@
 package ru.syndicate.cinemaclub.ui.screen.profile_main_screen
 
+import android.util.Log
 import androidx.compose.animation.core.Ease
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -26,6 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.hilt.getViewModel
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.NavigatorDisposeBehavior
 import cafe.adriel.voyager.transitions.FadeTransition
@@ -35,6 +37,7 @@ import ru.syndicate.cinemaclub.ui.theme.BarColor
 import ru.syndicate.cinemaclub.ui.theme.CustomBlue
 import ru.syndicate.cinemaclub.ui.theme.CustomGray
 import ru.syndicate.cinemaclub.ui.utils.ProfileScreen
+import ru.syndicate.cinemaclub.view_model.profile_view_model.ProfileViewModel
 
 class ProfileMainScreen : Screen {
 
@@ -48,6 +51,10 @@ class ProfileMainScreen : Screen {
                 disposeSteps = false
             )
         ) { navigator ->
+
+            for (item in navigator.items) {
+                Log.d("navigatorItems", item.key)
+            }
 
             val currentScreen = navigator.lastItem as ProfileScreen
 

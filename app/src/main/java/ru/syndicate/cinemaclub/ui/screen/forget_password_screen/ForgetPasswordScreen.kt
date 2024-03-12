@@ -15,6 +15,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,8 +29,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import cafe.adriel.voyager.hilt.getViewModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import ru.syndicate.cinemaclub.data.model.ProcessState
 import ru.syndicate.cinemaclub.ui.common.CustomTextField
 import ru.syndicate.cinemaclub.ui.extansions.containsUnwantedChar
 import ru.syndicate.cinemaclub.ui.screen.double_password_screen.DoublePasswordScreen
@@ -39,6 +43,8 @@ import ru.syndicate.cinemaclub.ui.theme.CustomBlue
 import ru.syndicate.cinemaclub.ui.theme.CustomGray
 import ru.syndicate.cinemaclub.ui.theme.TextWhite
 import ru.syndicate.cinemaclub.ui.utils.ProfileScreen
+import ru.syndicate.cinemaclub.view_model.send_code_view_model.SendCodeEvent
+import ru.syndicate.cinemaclub.view_model.send_code_view_model.SendCodeViewModel
 
 class ForgetPasswordScreen : ProfileScreen {
 
@@ -51,20 +57,31 @@ class ForgetPasswordScreen : ProfileScreen {
     @Composable
     override fun Content() {
 
+        val sendCodeViewModel = getViewModel<SendCodeViewModel>()
+
+        val sendCodeState by sendCodeViewModel.sendCodeState.collectAsState()
+
         val navigator = LocalNavigator.currentOrThrow
 
         ForgetPasswordScreenContent(
             modifier = Modifier
                 .fillMaxSize(),
+            uiState = sendCodeState,
+            onSend = { email ->
+                sendCodeViewModel.onEvent(SendCodeEvent.SendCode(email))
+            },
             navigateToNext = { email ->
-                navigator.push(
+
+                navigator.replace(
                     OtpVerifyScreen(
                         title = "Восстановление пароля",
                         email = email,
                         navigateToNext = {
-                            navigator.push(
+                            navigator.replace(
                                 DoublePasswordScreen(
-                                    title = "Восстановление пароля"
+                                    title = "Восстановление пароля",
+                                    name = "",
+                                    email = email
                                 )
                             )
                         },
@@ -80,12 +97,19 @@ class ForgetPasswordScreen : ProfileScreen {
 @Composable
 fun ForgetPasswordScreenContent(
     modifier: Modifier = Modifier,
+    uiState: ProcessState = ProcessState(),
     navigateToNext: (String) -> Unit = { },
+    onSend: (String) -> Unit = { },
     navigateToBack: () -> Unit = { }
 ) {
 
     var emailText by remember {
         mutableStateOf("")
+    }
+
+    LaunchedEffect(uiState) {
+        if (uiState.success)
+            navigateToNext(emailText)
     }
 
     Box(
@@ -226,7 +250,7 @@ fun ForgetPasswordScreenContent(
                         .background(
                             color = CustomBlue
                         )
-                        .clickable { navigateToNext(emailText) }
+                        .clickable { onSend(emailText) }
                         .padding(
                             vertical = 10.dp
                         ),

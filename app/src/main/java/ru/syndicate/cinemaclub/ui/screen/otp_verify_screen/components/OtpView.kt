@@ -21,8 +21,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 fun OtpView(
     modifier: Modifier,
     textList: List<MutableState<TextFieldValue>>,
-    requesterList: List<FocusRequester>,
-    isOtpTrue: MutableState<Boolean>
+    requesterList: List<FocusRequester>
 ) {
 
     val focusManager = LocalFocusManager.current
@@ -56,30 +55,6 @@ fun OtpView(
                         selection = TextRange(newValue.text.length)
                     )
 
-                    connectInputtedCode(textList) {
-
-                        focusManager.clearFocus()
-                        keyboardController?.hide()
-
-                        if (it) {
-
-                            Toast.makeText(context, "Success", Toast.LENGTH_LONG).show()
-
-                            isOtpTrue.value = true
-
-                        } else {
-
-                            Toast.makeText(context, "Fail", Toast.LENGTH_LONG).show()
-
-                            textList.forEach { text ->
-                                text.value = TextFieldValue(
-                                    text = "",
-                                    selection = TextRange(0)
-                                )
-                            }
-                        }
-                    }
-
                     nextFocus(textList, requesterList)
                 },
                 focusRequester = requesterList[index]
@@ -91,40 +66,6 @@ fun OtpView(
         requesterList[0].requestFocus()
     }
 }
-
-private fun connectInputtedCode(
-    textList: List<MutableState<TextFieldValue>>,
-    onVerifyCode: ((Boolean) -> Unit)? = null
-) {
-
-    var code = ""
-    textList.forEach {
-        code += it.value.text
-    }
-
-    if (code.length == 6) {
-
-        verifyCode(
-            code = code,
-            onSuccess = {
-                onVerifyCode?.let {
-                    it(true)
-                }
-            },
-            onError = {
-                onVerifyCode?.let {
-                    it(false)
-                }
-            }
-        )
-    }
-}
-
-private fun verifyCode(
-    code: String,
-    onSuccess: () -> Unit,
-    onError: () -> Unit
-) = if (code == "123456") onSuccess() else onError()
 
 private fun nextFocus(
     textList: List<MutableState<TextFieldValue>>,

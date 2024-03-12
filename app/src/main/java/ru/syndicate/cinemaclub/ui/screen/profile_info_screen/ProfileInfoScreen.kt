@@ -1,5 +1,6 @@
 package ru.syndicate.cinemaclub.ui.screen.profile_info_screen
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -17,6 +18,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,12 +30,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import cafe.adriel.voyager.hilt.getViewModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import ru.syndicate.cinemaclub.R
+import ru.syndicate.cinemaclub.data.model.UserData
 import ru.syndicate.cinemaclub.ui.screen.auth_screen.AuthScreen
 import ru.syndicate.cinemaclub.ui.screen.profile_main_screen.components.CustomSwitch
 import ru.syndicate.cinemaclub.ui.screen.profile_main_screen.components.SettingParam
@@ -43,6 +49,8 @@ import ru.syndicate.cinemaclub.ui.theme.CustomGray
 import ru.syndicate.cinemaclub.ui.theme.LightGray
 import ru.syndicate.cinemaclub.ui.theme.TextWhite
 import ru.syndicate.cinemaclub.ui.utils.ProfileScreen
+import ru.syndicate.cinemaclub.view_model.profile_view_model.ProfileEvent
+import ru.syndicate.cinemaclub.view_model.profile_view_model.ProfileViewModel
 
 class ProfileInfoScreen : ProfileScreen {
 
@@ -55,6 +63,11 @@ class ProfileInfoScreen : ProfileScreen {
     @Composable
     override fun Content() {
 
+        val profileViewModel = getViewModel<ProfileViewModel>()
+
+        val user by profileViewModel.user.collectAsState()
+        val isAuth by profileViewModel.isAuth.collectAsState()
+
         val navigator = LocalNavigator.currentOrThrow
 
         ProfileInfoScreenContent(
@@ -63,7 +76,11 @@ class ProfileInfoScreen : ProfileScreen {
                 .padding(
                     horizontal = 16.dp
                 ),
+            user = user,
+            isAuth = isAuth,
+            checkAuth = { profileViewModel.onEvent(ProfileEvent.CheckAuth) },
             onAuthClick = { navigator.push(AuthScreen()) },
+            logout = { profileViewModel.onEvent(ProfileEvent.Logout) },
             onClickToSafety = {
                 navigator.push(
                     SafetyScreen(
@@ -80,17 +97,23 @@ class ProfileInfoScreen : ProfileScreen {
 @Composable
 fun ProfileInfoScreenContent(
     modifier: Modifier = Modifier,
+    user: UserData = UserData(
+        name = "Иванов Иван",
+        email = "sample@mail.ru"
+    ),
+    isAuth: Boolean = true,
+    checkAuth: () -> Unit = { },
     onAuthClick: () -> Unit = { },
+    logout: () -> Unit = { },
     onClickToSafety: () -> Unit = { }
 ) {
 
-    // TODO: For test
-    var isAuth by remember {
+    var isUseLocation by remember {
         mutableStateOf(false)
     }
 
-    var isUseLocation by remember {
-        mutableStateOf(false)
+    LaunchedEffect(Unit) {
+        checkAuth()
     }
 
     LazyColumn(
@@ -105,7 +128,7 @@ fun ProfileInfoScreenContent(
                         top = 16.dp
                     )
                     .clickable {
-                        if (isAuth) {
+                        if (!isAuth) {
                             onAuthClick()
                         }
                     }
@@ -129,9 +152,6 @@ fun ProfileInfoScreenContent(
                     modifier = Modifier
                         .clip(RoundedCornerShape(10.dp))
                         .size(51.dp)
-                        .clickable {
-                            isAuth = !isAuth
-                        }
                         .background(
                             color = LightGray
                         ),
@@ -154,7 +174,7 @@ fun ProfileInfoScreenContent(
                     verticalArrangement = Arrangement.Center
                 ) {
 
-                    if (isAuth) {
+                    if (!isAuth) {
 
                         Text(
                             text = "Авторизоваться",
@@ -166,22 +186,23 @@ fun ProfileInfoScreenContent(
                     } else {
 
                         Text(
-                            text = "Иванов Иван",
+                            text = user.name,
                             style = MaterialTheme.typography.labelMedium,
                             fontWeight = FontWeight.Bold,
                             fontSize = 16.sp,
+                            overflow = TextOverflow.Ellipsis,
+                            maxLines = 1,
                             color = TextWhite
                         )
 
                         Text(
-                            text = "sample@mail.ru",
+                            text = user.email,
                             style = MaterialTheme.typography.labelMedium,
                             fontWeight = FontWeight.Normal,
                             fontSize = 16.sp,
                             color = CustomGray
                         )
                     }
-
                 }
 
                 Icon(
@@ -194,7 +215,7 @@ fun ProfileInfoScreenContent(
 
         item {
 
-            if (!isAuth) {
+            if (isAuth) {
 
                 Column(
                     modifier = Modifier
@@ -280,7 +301,7 @@ fun ProfileInfoScreenContent(
 
         item {
 
-            if (!isAuth) {
+            if (isAuth) {
 
                 Column(
                     modifier = Modifier
@@ -317,7 +338,7 @@ fun ProfileInfoScreenContent(
 
         item {
 
-            if (!isAuth) {
+            if (isAuth) {
 
                 Box(
                     modifier = Modifier
@@ -325,6 +346,9 @@ fun ProfileInfoScreenContent(
                             top = 16.dp
                         )
                         .clip(RoundedCornerShape(10.dp))
+                        .clickable {
+                            logout()
+                        }
                         .fillMaxWidth()
                         .background(
                             color = BlockBlack

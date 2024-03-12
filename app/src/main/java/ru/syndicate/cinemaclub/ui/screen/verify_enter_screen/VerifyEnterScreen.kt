@@ -91,17 +91,11 @@ data class VerifyEnterScreen(
                 val biometricPrompt = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                     BiometricPrompt.Builder(context)
                         .apply {
-                            setTitle("test")
+                            setTitle("Вход в Cinema Club")
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                                 setConfirmationRequired(false)
                             }
-                            setNegativeButton("use app password", executor) { _, _, ->
-                                Toast.makeText(
-                                    context,
-                                    "Authentication Cancelled",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
+                            setNegativeButton("отмена", executor) { _, _, -> }
                         }.build()
                 } else {
                     TODO("VERSION.SDK_INT < P")

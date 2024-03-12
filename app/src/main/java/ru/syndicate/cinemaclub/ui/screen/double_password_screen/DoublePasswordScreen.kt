@@ -15,6 +15,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,8 +29,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import cafe.adriel.voyager.hilt.getViewModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import ru.syndicate.cinemaclub.data.model.ProcessState
 import ru.syndicate.cinemaclub.ui.common.CustomTextField
 import ru.syndicate.cinemaclub.ui.extansions.containsUnwantedChar
 import ru.syndicate.cinemaclub.ui.screen.auth_screen.AuthScreen
@@ -38,9 +42,14 @@ import ru.syndicate.cinemaclub.ui.theme.CustomBlue
 import ru.syndicate.cinemaclub.ui.theme.CustomGray
 import ru.syndicate.cinemaclub.ui.theme.TextWhite
 import ru.syndicate.cinemaclub.ui.utils.ProfileScreen
+import ru.syndicate.cinemaclub.view_model.profile_view_model.ProfileViewModel
+import ru.syndicate.cinemaclub.view_model.register_view_model.RegisterEvent
+import ru.syndicate.cinemaclub.view_model.register_view_model.RegisterViewModel
 
 data class DoublePasswordScreen(
-    val title: String
+    val title: String,
+    val name: String,
+    val email: String
 ) : ProfileScreen {
 
     override val topBarLabel: String
@@ -52,13 +61,39 @@ data class DoublePasswordScreen(
     @Composable
     override fun Content() {
 
+        val registerViewModel = getViewModel<RegisterViewModel>()
+
+        val uiState by registerViewModel.uiState.collectAsState()
+
         val navigator = LocalNavigator.currentOrThrow
 
         DoublePasswordScreenContent(
             modifier = Modifier
                 .fillMaxSize(),
             title = title,
-            navigateToNext = { navigator.popUntil { it is AuthScreen } },
+            uiState = uiState,
+            navigateToNext = {
+                navigator.popUntil { it is AuthScreen }
+            },
+            onRegister = { password ->
+
+                if (name.isNotEmpty()) {
+                    registerViewModel.onEvent(
+                        RegisterEvent.RegisterUser(
+                            name = name,
+                            email = email,
+                            password = password
+                        )
+                    )
+                } else {
+                    registerViewModel.onEvent(
+                        RegisterEvent.ResetPassword(
+                            email = email,
+                            password = password
+                        )
+                    )
+                }
+            },
             navigateToBack = { navigator.pop() }
         )
     }
@@ -68,7 +103,9 @@ data class DoublePasswordScreen(
 fun DoublePasswordScreenContent(
     modifier: Modifier = Modifier,
     title: String = "Регистрация",
+    uiState: ProcessState = ProcessState(),
     navigateToNext: () -> Unit = { },
+    onRegister: (String) -> Unit = { },
     navigateToBack: () -> Unit = { }
 ) {
 
@@ -77,6 +114,11 @@ fun DoublePasswordScreenContent(
     }
     var repeatPasswordText by remember {
         mutableStateOf("")
+    }
+
+    LaunchedEffect(uiState) {
+        if (uiState.success)
+            navigateToNext()
     }
 
     Box(
@@ -247,7 +289,10 @@ fun DoublePasswordScreenContent(
                         .background(
                             color = CustomBlue
                         )
-                        .clickable { navigateToNext() }
+                        .clickable {
+                            if (passwordText == repeatPasswordText && passwordText.isNotEmpty())
+                                onRegister(repeatPasswordText)
+                        }
                         .padding(
                             vertical = 10.dp
                         ),

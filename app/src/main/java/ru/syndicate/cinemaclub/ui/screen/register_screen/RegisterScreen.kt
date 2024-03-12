@@ -57,7 +57,7 @@ class RegisterScreen : ProfileScreen {
         RegisterScreenContent(
             modifier = Modifier
                 .fillMaxSize(),
-            navigateToNext = { email ->
+            navigateToNext = { email, name ->
                 navigator.push(
                     OtpVerifyScreen(
                         title = "Регистрация",
@@ -65,7 +65,9 @@ class RegisterScreen : ProfileScreen {
                         navigateToNext = {
                             navigator.push(
                                 DoublePasswordScreen(
-                                    title = "Регистрация"
+                                    title = "Регистрация",
+                                    name = name,
+                                    email = email
                                 )
                             )
                         },
@@ -83,7 +85,7 @@ class RegisterScreen : ProfileScreen {
 @Composable
 fun RegisterScreenContent(
     modifier: Modifier = Modifier,
-    navigateToNext: (String) -> Unit = { },
+    navigateToNext: (String, String) -> Unit = { _: String, _: String -> },
     navigateToAuth: () -> Unit = { }
 ) {
 
@@ -256,7 +258,7 @@ fun RegisterScreenContent(
                         .background(
                             color = CustomBlue
                         )
-                        .clickable { navigateToNext(emailText) }
+                        .clickable { navigateToNext(emailText, nameText) }
                         .padding(
                             vertical = 10.dp
                         ),

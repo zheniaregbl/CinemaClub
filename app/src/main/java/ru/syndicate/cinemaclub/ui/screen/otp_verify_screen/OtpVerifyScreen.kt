@@ -1,7 +1,6 @@
 package ru.syndicate.cinemaclub.ui.screen.otp_verify_screen
 
 import android.annotation.SuppressLint
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -17,13 +16,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
@@ -31,6 +32,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import cafe.adriel.voyager.hilt.getViewModel
+import ru.syndicate.cinemaclub.data.model.ProcessState
 import ru.syndicate.cinemaclub.ui.screen.otp_verify_screen.components.OtpView
 import ru.syndicate.cinemaclub.ui.theme.BackgroundColor
 import ru.syndicate.cinemaclub.ui.theme.BlockBlack
@@ -38,6 +41,8 @@ import ru.syndicate.cinemaclub.ui.theme.CustomBlue
 import ru.syndicate.cinemaclub.ui.theme.CustomGray
 import ru.syndicate.cinemaclub.ui.theme.TextWhite
 import ru.syndicate.cinemaclub.ui.utils.ProfileScreen
+import ru.syndicate.cinemaclub.view_model.profile_view_model.ProfileEvent
+import ru.syndicate.cinemaclub.view_model.profile_view_model.ProfileViewModel
 
 data class OtpVerifyScreen(
     val title: String,
@@ -55,12 +60,27 @@ data class OtpVerifyScreen(
     @Composable
     override fun Content() {
 
+        val profileViewModel = getViewModel<ProfileViewModel>()
+
+        val otpUiState by profileViewModel.otpUiState.collectAsState()
+
         OtpVerifyScreenContent(
             modifier = Modifier
                 .fillMaxSize(),
             title = title,
             email = email,
-            navigateToNext = { navigateToNext() },
+            uiState = otpUiState,
+            checkCode = {
+                profileViewModel.onEvent(
+                    ProfileEvent.CheckCode(
+                        email = email,
+                        code = it
+                    )
+                )
+            },
+            navigateToNext = {
+                navigateToNext()
+            },
             navigateToBack = { navigateToBack() }
         )
     }
@@ -72,15 +92,12 @@ fun OtpVerifyScreenContent(
     modifier: Modifier = Modifier,
     title: String = "",
     email: String = "",
+    uiState: ProcessState = ProcessState(),
+    checkCode: (String) -> Unit = { },
+    resetState: () -> Unit = { },
     navigateToNext: () -> Unit = { },
     navigateToBack: () -> Unit = { }
 ) {
-
-    val context = LocalContext.current
-
-    val isOtpTrue = remember {
-        mutableStateOf(false)
-    }
 
     val textList = listOf(
         mutableStateOf(
@@ -128,6 +145,13 @@ fun OtpVerifyScreenContent(
         FocusRequester(),
         FocusRequester()
     )
+
+    LaunchedEffect(uiState) {
+        if (uiState.success) {
+            navigateToNext()
+            resetState()
+        }
+    }
 
     Box(
         modifier = modifier,
@@ -188,8 +212,7 @@ fun OtpVerifyScreenContent(
                         )
                         .fillMaxWidth(),
                     textList = textList,
-                    requesterList = requesterList,
-                    isOtpTrue = isOtpTrue
+                    requesterList = requesterList
                 )
             }
 
@@ -271,16 +294,9 @@ fun OtpVerifyScreenContent(
                             color = CustomBlue
                         )
                         .clickable {
-                            if (isOtpTrue.value)
-                                navigateToNext()
-                            else
-                                Toast
-                                    .makeText(
-                                        context,
-                                        "Problem with OTP",
-                                        Toast.LENGTH_LONG
-                                    )
-                                    .show()
+                            checkCode(
+                                createCode(textList)
+                            )
                         }
                         .padding(
                             vertical = 10.dp
@@ -309,4 +325,17 @@ private fun PreviewOtpScreen() {
         title = "Регистрация",
         email = "s*****@std.novsu.ru"
     )
+}
+
+private fun createCode(
+    textList: List<MutableState<TextFieldValue>>
+): String {
+
+    var code = ""
+
+    textList.forEach {
+        code += it.value.text
+    }
+
+    return code
 }

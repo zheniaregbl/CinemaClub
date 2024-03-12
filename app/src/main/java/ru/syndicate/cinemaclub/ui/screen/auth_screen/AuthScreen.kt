@@ -18,6 +18,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,13 +34,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import cafe.adriel.voyager.hilt.getViewModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import ru.syndicate.cinemaclub.R
+import ru.syndicate.cinemaclub.data.model.ProcessState
 import ru.syndicate.cinemaclub.ui.common.CustomTextField
 import ru.syndicate.cinemaclub.ui.extansions.containsUnwantedChar
 import ru.syndicate.cinemaclub.ui.screen.forget_password_screen.ForgetPasswordScreen
-import ru.syndicate.cinemaclub.ui.screen.otp_verify_screen.OtpVerifyScreen
 import ru.syndicate.cinemaclub.ui.screen.profile_info_screen.ProfileInfoScreen
 import ru.syndicate.cinemaclub.ui.screen.register_screen.RegisterScreen
 import ru.syndicate.cinemaclub.ui.theme.BackgroundColor
@@ -47,6 +50,10 @@ import ru.syndicate.cinemaclub.ui.theme.CustomBlue
 import ru.syndicate.cinemaclub.ui.theme.CustomGray
 import ru.syndicate.cinemaclub.ui.theme.TextWhite
 import ru.syndicate.cinemaclub.ui.utils.ProfileScreen
+import ru.syndicate.cinemaclub.view_model.auth_view_model.AuthEvent
+import ru.syndicate.cinemaclub.view_model.auth_view_model.AuthViewModel
+import ru.syndicate.cinemaclub.view_model.profile_view_model.ProfileEvent
+import ru.syndicate.cinemaclub.view_model.profile_view_model.ProfileViewModel
 
 class AuthScreen : ProfileScreen {
 
@@ -59,12 +66,28 @@ class AuthScreen : ProfileScreen {
     @Composable
     override fun Content() {
 
+        val authViewModel = getViewModel<AuthViewModel>()
+
+        val authState by authViewModel.authState.collectAsState()
+
         val navigator = LocalNavigator.currentOrThrow
 
         AuthScreenContent(
             modifier = Modifier
                 .fillMaxSize(),
-            navigateToNext = { navigator.popUntil { it is ProfileInfoScreen } },
+            uiState = authState,
+            onAuth = { email, password ->
+                authViewModel.onEvent(
+                    AuthEvent.AuthUser(
+                        email = email,
+                        password = password
+                    )
+                )
+            },
+            navigateToNext = {
+                navigator.pop()
+                authViewModel.onEvent(AuthEvent.ResetState)
+            },
             navigateToRegister = { navigator.push(RegisterScreen()) },
             onClickForgetPassword = { navigator.push(ForgetPasswordScreen()) }
         )
@@ -74,6 +97,8 @@ class AuthScreen : ProfileScreen {
 @Composable
 fun AuthScreenContent(
     modifier: Modifier = Modifier,
+    uiState: ProcessState = ProcessState(),
+    onAuth: (String, String) -> Unit = { _: String, _: String -> },
     navigateToNext: () -> Unit = { },
     navigateToRegister: () -> Unit = { },
     onClickForgetPassword: () -> Unit = { }
@@ -88,6 +113,12 @@ fun AuthScreenContent(
 
     var rememberUser by remember {
         mutableStateOf(false)
+    }
+
+    LaunchedEffect(uiState) {
+        if (uiState.success) {
+            navigateToNext()
+        }
     }
 
     Box(
@@ -288,7 +319,9 @@ fun AuthScreenContent(
                         .background(
                             color = CustomBlue
                         )
-                        .clickable { navigateToNext() }
+                        .clickable {
+                            onAuth(emailText, passwordText)
+                        }
                         .padding(
                             vertical = 10.dp
                         ),
