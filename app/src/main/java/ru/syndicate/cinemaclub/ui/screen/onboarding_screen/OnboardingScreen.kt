@@ -33,6 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.hilt.getViewModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import kotlinx.coroutines.Dispatchers
@@ -43,11 +44,15 @@ import ru.syndicate.cinemaclub.ui.screen.main_screen.MainScreen
 import ru.syndicate.cinemaclub.ui.screen.onboarding_screen.components.ImageBackground
 import ru.syndicate.cinemaclub.ui.screen.onboarding_screen.components.OnboardingItem
 import ru.syndicate.cinemaclub.ui.theme.CustomBlue
+import ru.syndicate.cinemaclub.view_model.onboarding_view_model.OnboardingEvent
+import ru.syndicate.cinemaclub.view_model.onboarding_view_model.OnboardingViewModel
 
 class OnboardingScreen : Screen {
 
     @Composable
     override fun Content() {
+
+        val onboardingViewModel = getViewModel<OnboardingViewModel>()
 
         val navigator = LocalNavigator.currentOrThrow
 
@@ -55,6 +60,7 @@ class OnboardingScreen : Screen {
             modifier = Modifier
                 .fillMaxSize(),
             navigateToMainScreen = {
+                onboardingViewModel.onEvent(OnboardingEvent.FinishOnboarding)
                 navigator.replace(MainScreen())
             }
         )

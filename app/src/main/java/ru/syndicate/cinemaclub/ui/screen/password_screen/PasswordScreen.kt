@@ -1,4 +1,4 @@
-package ru.syndicate.cinemaclub.ui.screen.create_password_screen
+package ru.syndicate.cinemaclub.ui.screen.password_screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -10,10 +10,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.ripple.LocalRippleTheme
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -24,25 +26,35 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.hilt.getViewModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import ru.syndicate.cinemaclub.R
-import ru.syndicate.cinemaclub.ui.screen.create_password_screen.components.CircleButton
-import ru.syndicate.cinemaclub.ui.screen.create_password_screen.components.Indicator
+import ru.syndicate.cinemaclub.ui.screen.onboarding_screen.OnboardingScreen
+import ru.syndicate.cinemaclub.ui.screen.password_screen.components.CircleButtonNumber
+import ru.syndicate.cinemaclub.ui.screen.password_screen.components.Indicator
 import ru.syndicate.cinemaclub.ui.theme.BackgroundColor
+import ru.syndicate.cinemaclub.ui.theme.CustomBlue
 import ru.syndicate.cinemaclub.ui.theme.CustomGray
 import ru.syndicate.cinemaclub.ui.theme.TextWhite
+import ru.syndicate.cinemaclub.ui.utils.CustomRipple
+import ru.syndicate.cinemaclub.view_model.create_password_view_model.CreatePasswordEvent
+import ru.syndicate.cinemaclub.view_model.create_password_view_model.CreatePasswordViewModel
+import java.util.concurrent.Executor
 
-class CreatePasswordScreen : Screen {
+class PasswordScreen: Screen {
 
     @Composable
     override fun Content() {
+
+        val createPasswordViewModel = getViewModel<CreatePasswordViewModel>()
 
         val navigator = LocalNavigator.currentOrThrow
 
@@ -50,6 +62,11 @@ class CreatePasswordScreen : Screen {
             modifier = Modifier
                 .fillMaxSize(),
             createPassword = {
+
+                createPasswordViewModel.onEvent(
+                    CreatePasswordEvent.RegisterPassword(it)
+                )
+
                 navigator.pop()
             }
         )
@@ -59,7 +76,7 @@ class CreatePasswordScreen : Screen {
 @Composable
 fun CreatePasswordScreenContent(
     modifier: Modifier = Modifier,
-    createPassword: () -> Unit = { }
+    createPassword: (String) -> Unit = { }
 ) {
 
     var step by remember {
@@ -82,7 +99,7 @@ fun CreatePasswordScreenContent(
         if (secondPassword.length == 4) {
 
             if (firstPassword == secondPassword)
-                createPassword()
+                createPassword(secondPassword)
             else
                 secondPassword = ""
         }
@@ -124,35 +141,35 @@ fun CreatePasswordScreenContent(
                     horizontalArrangement = Arrangement.spacedBy(30.dp)
                 ) {
 
-                    CircleButton(
+                    CircleButtonNumber(
                         text = "1",
                         onClick = {
                             if (step == 1) {
-                                firstPassword += 1
+                                firstPassword += "1"
                             } else {
-                                secondPassword += 1
+                                secondPassword += "1"
                             }
                         }
                     )
 
-                    CircleButton(
+                    CircleButtonNumber(
                         text = "2",
                         onClick = {
                             if (step == 1) {
-                                firstPassword += 2
+                                firstPassword += "2"
                             } else {
-                                secondPassword += 2
+                                secondPassword += "2"
                             }
                         }
                     )
 
-                    CircleButton(
+                    CircleButtonNumber(
                         text = "3",
                         onClick = {
                             if (step == 1) {
-                                firstPassword += 3
+                                firstPassword += "3"
                             } else {
-                                secondPassword += 3
+                                secondPassword += "3"
                             }
                         }
                     )
@@ -162,35 +179,35 @@ fun CreatePasswordScreenContent(
                     horizontalArrangement = Arrangement.spacedBy(30.dp)
                 ) {
 
-                    CircleButton(
+                    CircleButtonNumber(
                         text = "4",
                         onClick = {
                             if (step == 1) {
-                                firstPassword += 4
+                                firstPassword += "4"
                             } else {
                                 secondPassword += 4
                             }
                         }
                     )
 
-                    CircleButton(
+                    CircleButtonNumber(
                         text = "5",
                         onClick = {
                             if (step == 1) {
-                                firstPassword += 5
+                                firstPassword += "5"
                             } else {
-                                secondPassword += 5
+                                secondPassword += "5"
                             }
                         }
                     )
 
-                    CircleButton(
+                    CircleButtonNumber(
                         text = "6",
                         onClick = {
                             if (step == 1) {
-                                firstPassword += 6
+                                firstPassword += "6"
                             } else {
-                                secondPassword += 6
+                                secondPassword += "6"
                             }
                         }
                     )
@@ -200,35 +217,35 @@ fun CreatePasswordScreenContent(
                     horizontalArrangement = Arrangement.spacedBy(30.dp)
                 ) {
 
-                    CircleButton(
+                    CircleButtonNumber(
                         text = "7",
                         onClick = {
                             if (step == 1) {
-                                firstPassword += 7
+                                firstPassword += "7"
                             } else {
-                                secondPassword += 7
+                                secondPassword += "7"
                             }
                         }
                     )
 
-                    CircleButton(
+                    CircleButtonNumber(
                         text = "8",
                         onClick = {
                             if (step == 1) {
-                                firstPassword += 8
+                                firstPassword += "8"
                             } else {
-                                secondPassword += 8
+                                secondPassword += "8"
                             }
                         }
                     )
 
-                    CircleButton(
+                    CircleButtonNumber(
                         text = "9",
                         onClick = {
                             if (step == 1) {
-                                firstPassword += 9
+                                firstPassword += "9"
                             } else {
-                                secondPassword += 9
+                                secondPassword += "9"
                             }
                         }
                     )
@@ -243,35 +260,41 @@ fun CreatePasswordScreenContent(
                             .size(80.dp)
                     )
 
-                    CircleButton(
+                    CircleButtonNumber(
                         text = "0",
                         onClick = {
                             if (step == 1) {
-                                firstPassword += 1
+                                firstPassword += "0"
                             } else {
-                                secondPassword += 1
+                                secondPassword += "0"
                             }
                         }
                     )
 
-                    Box(
-                        modifier = Modifier
-                            .clip(CircleShape)
-                            .size(80.dp)
-                            .clickable {
-                                when {
-                                    step == 1 && firstPassword.isNotEmpty() -> firstPassword = firstPassword.dropLast(1)
-                                    step == 2 && secondPassword.isNotEmpty() -> secondPassword = secondPassword.dropLast(1)
-                                }
-                            },
-                        contentAlignment = Alignment.Center
-                    ) {
+                    CompositionLocalProvider(LocalRippleTheme provides CustomRipple(CustomBlue)) {
 
-                        Icon(
-                            imageVector = ImageVector.vectorResource(id = R.drawable.svg_delete),
-                            contentDescription = null,
-                            tint = CustomGray
-                        )
+                        Box(
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .size(80.dp)
+                                .clickable {
+                                    when {
+                                        step == 1 && firstPassword.isNotEmpty() -> firstPassword =
+                                            firstPassword.dropLast(1)
+
+                                        step == 2 && secondPassword.isNotEmpty() -> secondPassword =
+                                            secondPassword.dropLast(1)
+                                    }
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+
+                            Icon(
+                                imageVector = ImageVector.vectorResource(id = R.drawable.svg_delete),
+                                contentDescription = null,
+                                tint = CustomGray
+                            )
+                        }
                     }
                 }
             }

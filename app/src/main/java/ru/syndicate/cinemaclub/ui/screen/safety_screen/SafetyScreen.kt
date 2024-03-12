@@ -1,9 +1,7 @@
 package ru.syndicate.cinemaclub.ui.screen.safety_screen
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,12 +9,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ripple.LocalRippleTheme
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,16 +28,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import cafe.adriel.voyager.hilt.getViewModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import ru.syndicate.cinemaclub.R
-import ru.syndicate.cinemaclub.ui.screen.create_password_screen.CreatePasswordScreen
+import ru.syndicate.cinemaclub.ui.screen.password_screen.PasswordScreen
 import ru.syndicate.cinemaclub.ui.screen.profile_main_screen.components.CustomSwitch
 import ru.syndicate.cinemaclub.ui.theme.BackgroundColor
 import ru.syndicate.cinemaclub.ui.theme.BlockBlack
 import ru.syndicate.cinemaclub.ui.theme.CustomGray
-import ru.syndicate.cinemaclub.ui.utils.CustomRippleTheme
 import ru.syndicate.cinemaclub.ui.utils.ProfileScreen
+import ru.syndicate.cinemaclub.view_model.safety_view_model.SafetyEvent
+import ru.syndicate.cinemaclub.view_model.safety_view_model.SafetyViewModel
 
 data class SafetyScreen(
     val onBack: () -> Unit
@@ -60,14 +60,25 @@ data class SafetyScreen(
     @Composable
     override fun Content() {
 
+        val safetyViewModel = getViewModel<SafetyViewModel>()
+
+        val haveAppPassword by safetyViewModel.haveAppPassword.collectAsState()
+
         val navigator = LocalNavigator.currentOrThrow
 
         SafetyScreenContent(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp),
+            haveAppPassword = haveAppPassword,
             navigateToPassword = {
-                navigator.parent!!.parent!!.push(CreatePasswordScreen())
+                navigator.parent!!.parent!!.push(PasswordScreen())
+            },
+            deletePassword = {
+                safetyViewModel.onEvent(SafetyEvent.DeletePassword)
+            },
+            onLaunch = {
+                safetyViewModel.onEvent(SafetyEvent.CheckHavePassword)
             }
         )
     }
@@ -76,14 +87,18 @@ data class SafetyScreen(
 @Composable
 fun SafetyScreenContent(
     modifier: Modifier = Modifier,
-    navigateToPassword: () -> Unit = { }
+    haveAppPassword: Boolean = false,
+    navigateToPassword: () -> Unit = { },
+    deletePassword: () -> Unit = { },
+    onLaunch: () -> Unit = { }
 ) {
 
-    var usePassword by remember {
-        mutableStateOf(false)
-    }
     var useBiometric by remember {
         mutableStateOf(false)
+    }
+
+    LaunchedEffect(Unit) {
+        onLaunch()
     }
 
     Column(
@@ -132,12 +147,12 @@ fun SafetyScreenContent(
                     switchPadding = 1.dp,
                     buttonWidth = 31.dp,
                     buttonHeight = 19.dp,
-                    value = usePassword,
+                    value = haveAppPassword,
                     onSwitch = {
-                        usePassword = !usePassword
-
-                        if (usePassword) {
+                        if (!haveAppPassword) {
                             navigateToPassword()
+                        } else {
+                            deletePassword()
                         }
                     }
                 )

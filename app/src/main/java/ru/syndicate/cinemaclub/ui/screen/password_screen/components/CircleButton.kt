@@ -1,4 +1,4 @@
-package ru.syndicate.cinemaclub.ui.screen.create_password_screen.components
+package ru.syndicate.cinemaclub.ui.screen.password_screen.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,27 +18,42 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.syndicate.cinemaclub.ui.theme.BlockBlack
+import ru.syndicate.cinemaclub.ui.theme.CustomBlue
 import ru.syndicate.cinemaclub.ui.theme.TextWhite
-import ru.syndicate.cinemaclub.ui.utils.CustomRippleTheme
+import ru.syndicate.cinemaclub.ui.utils.CustomRipple
 
 @Composable
-fun CircleButton(
+fun CircleButtonNumber(
     modifier: Modifier = Modifier,
     text: String = "1",
     onClick: () -> Unit = { }
 ) {
 
-    CompositionLocalProvider(LocalRippleTheme provides CustomRippleTheme) {
+
+
+    Box(
+        modifier = Modifier
+            .size(80.dp),
+        contentAlignment = Alignment.Center
+    ) {
+
+        CompositionLocalProvider(LocalRippleTheme provides CustomRipple(CustomBlue)) {
+            Box(
+                modifier = modifier
+                    .clip(CircleShape)
+                    .size(80.dp)
+                    .background(
+                        color = BlockBlack
+                    )
+                    .clickable {
+                        onClick()
+                    }
+            )
+        }
+
         Box(
-            modifier = modifier
-                .clip(CircleShape)
-                .size(80.dp)
-                .background(
-                    color = BlockBlack
-                )
-                .clickable {
-                    onClick()
-                },
+            modifier = Modifier
+                .size(80.dp),
             contentAlignment = Alignment.Center
         ) {
 
@@ -56,5 +71,5 @@ fun CircleButton(
 @Preview
 @Composable
 private fun PreviewCircleButton() {
-    CircleButton()
+    CircleButtonNumber()
 }

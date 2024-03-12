@@ -1,4 +1,4 @@
-package ru.syndicate.cinemaclub.ui.screen.create_password_screen.components
+package ru.syndicate.cinemaclub.ui.screen.password_screen.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

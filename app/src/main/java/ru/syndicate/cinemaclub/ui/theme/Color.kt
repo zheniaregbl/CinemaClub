@@ -21,3 +21,5 @@ val TextWhite = Color(0xFFF1F1F1)
 val LightGray = Color(0xFFDEDEDE)
 
 val CustomRed = Color(0xFFC22E21)
+
+val V1 = Color(0x9CFF1500)
