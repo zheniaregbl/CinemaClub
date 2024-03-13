@@ -6,6 +6,7 @@ import retrofit2.http.Body
 import retrofit2.http.Headers
 import retrofit2.http.POST
 import ru.syndicate.cinemaclub.data.model.AuthBody
+import ru.syndicate.cinemaclub.data.model.AuthResponse
 import ru.syndicate.cinemaclub.data.model.CheckCodeBody
 import ru.syndicate.cinemaclub.data.model.RegisterBody
 import ru.syndicate.cinemaclub.data.model.ResetPasswordBody
@@ -23,7 +24,7 @@ interface CinemaApi {
     @POST("sign-in")
     suspend fun auth(
         @Body body: AuthBody
-    ): Response<JsonObject>
+    ): Response<AuthResponse>
 
     @Headers("Content-Type: application/json")
     @POST("forgot-password/send-code")

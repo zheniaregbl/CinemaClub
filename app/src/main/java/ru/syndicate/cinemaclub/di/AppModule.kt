@@ -29,10 +29,6 @@ object AppModule {
             .create(CinemaApi::class.java)
     }
 
-    fun provideCinemaRepository(cinemaApi: CinemaApi): CinemaRepository {
-        return CinemaRepositoryImpl(cinemaApi)
-    }
-
     @Provides
     @Singleton
     fun provideSharedPreference(@ApplicationContext context: Context): SharedPreferences {

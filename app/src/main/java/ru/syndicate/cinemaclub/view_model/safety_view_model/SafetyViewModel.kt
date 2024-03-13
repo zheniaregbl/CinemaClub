@@ -1,7 +1,6 @@
 package ru.syndicate.cinemaclub.view_model.safety_view_model
 
 import android.content.SharedPreferences
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel

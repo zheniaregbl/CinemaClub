@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.syndicate.cinemaclub.data.model.AuthBody
+import ru.syndicate.cinemaclub.data.model.BaseModel
 import ru.syndicate.cinemaclub.data.model.CheckCodeBody
 import ru.syndicate.cinemaclub.data.model.ProcessState
 import ru.syndicate.cinemaclub.data.model.RegisterBody
@@ -20,14 +21,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val repository: CinemaRepositoryImpl,
     private val sharedPreferences: SharedPreferences
 ) : ViewModel() {
 
     val user = MutableStateFlow(UserData())
     val isAuth = MutableStateFlow(false)
-
-    val otpUiState = MutableStateFlow(ProcessState())
 
     init {
         checkAuth()
@@ -44,25 +42,6 @@ class ProfileViewModel @Inject constructor(
                 logout()
                 checkAuth()
             }
-
-            is ProfileEvent.CheckCode -> {
-                checkCode(
-                    CheckCodeBody(
-                        email = event.email,
-                        code = event.code
-                    )
-                )
-            }
-
-            ProfileEvent.ResetOtpState -> {
-                resetOtpState()
-            }
-        }
-    }
-
-    private fun resetOtpState() {
-        viewModelScope.launch(Dispatchers.IO) {
-            otpUiState.update { ProcessState() }
         }
     }
 
@@ -76,24 +55,9 @@ class ProfileViewModel @Inject constructor(
             user.update {
                 UserData(
                     name = sharedPreferences.getString("user_name", "")!!,
-                    email = sharedPreferences.getString("user_email", "")!!
+                    email = sharedPreferences.getString("user_email", "")!!,
+                    balance = sharedPreferences.getInt("cinema_money", 0)
                 )
-            }
-        }
-    }
-
-    private fun checkCode(body: CheckCodeBody) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val value = repository.checkCode(body)
-
-            if (value) {
-                otpUiState.update {
-                    ProcessState(
-                        success = true
-                    )
-                }
-
-                sharedPreferences.edit().putString("verify_code", body.code).apply()
             }
         }
     }
@@ -101,6 +65,7 @@ class ProfileViewModel @Inject constructor(
     private fun logout() {
         viewModelScope.launch(Dispatchers.IO) {
             sharedPreferences.edit().putString("access_token", "").apply()
+            sharedPreferences.edit().putBoolean("remember_user", false).apply()
             sharedPreferences.edit().putString("user_name", "").apply()
             sharedPreferences.edit().putString("user_email", "").apply()
             sharedPreferences.edit().putBoolean("have_password", false).apply()

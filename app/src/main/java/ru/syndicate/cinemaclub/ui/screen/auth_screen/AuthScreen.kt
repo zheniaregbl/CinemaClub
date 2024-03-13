@@ -1,5 +1,9 @@
 package ru.syndicate.cinemaclub.ui.screen.auth_screen
 
+import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -14,6 +18,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -27,7 +32,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -38,8 +45,10 @@ import cafe.adriel.voyager.hilt.getViewModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import ru.syndicate.cinemaclub.R
+import ru.syndicate.cinemaclub.data.model.BaseModel
 import ru.syndicate.cinemaclub.data.model.ProcessState
 import ru.syndicate.cinemaclub.ui.common.CustomTextField
+import ru.syndicate.cinemaclub.ui.common.LoadingLayout
 import ru.syndicate.cinemaclub.ui.extansions.containsUnwantedChar
 import ru.syndicate.cinemaclub.ui.screen.forget_password_screen.ForgetPasswordScreen
 import ru.syndicate.cinemaclub.ui.screen.profile_info_screen.ProfileInfoScreen
@@ -75,18 +84,19 @@ class AuthScreen : ProfileScreen {
         AuthScreenContent(
             modifier = Modifier
                 .fillMaxSize(),
+            isLoading = authState is BaseModel.Loading,
             uiState = authState,
-            onAuth = { email, password ->
+            onAuth = { email, password, rememberUser ->
                 authViewModel.onEvent(
                     AuthEvent.AuthUser(
                         email = email,
-                        password = password
+                        password = password,
+                        rememberUser = rememberUser
                     )
                 )
             },
             navigateToNext = {
                 navigator.pop()
-                authViewModel.onEvent(AuthEvent.ResetState)
             },
             navigateToRegister = { navigator.push(RegisterScreen()) },
             onClickForgetPassword = { navigator.push(ForgetPasswordScreen()) }
@@ -97,12 +107,15 @@ class AuthScreen : ProfileScreen {
 @Composable
 fun AuthScreenContent(
     modifier: Modifier = Modifier,
-    uiState: ProcessState = ProcessState(),
-    onAuth: (String, String) -> Unit = { _: String, _: String -> },
+    isLoading: Boolean = false,
+    uiState: BaseModel<Boolean>? = BaseModel.Success(true),
+    onAuth: (String, String, Boolean) -> Unit = { _: String, _: String, _: Boolean -> },
     navigateToNext: () -> Unit = { },
     navigateToRegister: () -> Unit = { },
     onClickForgetPassword: () -> Unit = { }
 ) {
+
+    val context = LocalContext.current
 
     var emailText by remember {
         mutableStateOf("")
@@ -116,8 +129,15 @@ fun AuthScreenContent(
     }
 
     LaunchedEffect(uiState) {
-        if (uiState.success) {
+
+        if (uiState is BaseModel.Success) {
             navigateToNext()
+        } else if (uiState is BaseModel.Error) {
+            Toast.makeText(
+                context,
+                uiState.error,
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
 
@@ -320,7 +340,7 @@ fun AuthScreenContent(
                             color = CustomBlue
                         )
                         .clickable {
-                            onAuth(emailText, passwordText)
+                            onAuth(emailText, passwordText, rememberUser)
                         }
                         .padding(
                             vertical = 10.dp
@@ -335,6 +355,8 @@ fun AuthScreenContent(
             }
         }
     }
+
+    LoadingLayout(visible = isLoading)
 }
 
 @Preview
@@ -346,5 +368,18 @@ private fun PreviewAuthScreen() {
             .background(
                 color = BackgroundColor
             )
+    )
+}
+
+@Preview
+@Composable
+private fun PreviewAuthScreenLoading() {
+    AuthScreenContent(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                color = BackgroundColor
+            ),
+        isLoading = true
     )
 }

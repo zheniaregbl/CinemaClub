@@ -1,6 +1,7 @@
 package ru.syndicate.cinemaclub.ui.screen.otp_verify_screen
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -25,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
@@ -33,7 +35,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.hilt.getViewModel
+import ru.syndicate.cinemaclub.data.model.BaseModel
 import ru.syndicate.cinemaclub.data.model.ProcessState
+import ru.syndicate.cinemaclub.ui.common.LoadingLayout
 import ru.syndicate.cinemaclub.ui.screen.otp_verify_screen.components.OtpView
 import ru.syndicate.cinemaclub.ui.theme.BackgroundColor
 import ru.syndicate.cinemaclub.ui.theme.BlockBlack
@@ -41,6 +45,8 @@ import ru.syndicate.cinemaclub.ui.theme.CustomBlue
 import ru.syndicate.cinemaclub.ui.theme.CustomGray
 import ru.syndicate.cinemaclub.ui.theme.TextWhite
 import ru.syndicate.cinemaclub.ui.utils.ProfileScreen
+import ru.syndicate.cinemaclub.view_model.otp_view_model.OtpEvent
+import ru.syndicate.cinemaclub.view_model.otp_view_model.OtpViewModel
 import ru.syndicate.cinemaclub.view_model.profile_view_model.ProfileEvent
 import ru.syndicate.cinemaclub.view_model.profile_view_model.ProfileViewModel
 
@@ -60,19 +66,20 @@ data class OtpVerifyScreen(
     @Composable
     override fun Content() {
 
-        val profileViewModel = getViewModel<ProfileViewModel>()
+        val otpViewModel = getViewModel<OtpViewModel>()
 
-        val otpUiState by profileViewModel.otpUiState.collectAsState()
+        val otpState by otpViewModel.otpState.collectAsState()
 
         OtpVerifyScreenContent(
             modifier = Modifier
                 .fillMaxSize(),
             title = title,
             email = email,
-            uiState = otpUiState,
+            isLoading = otpState is BaseModel.Loading,
+            uiState = otpState,
             checkCode = {
-                profileViewModel.onEvent(
-                    ProfileEvent.CheckCode(
+                otpViewModel.onEvent(
+                    OtpEvent.CheckCode(
                         email = email,
                         code = it
                     )
@@ -92,12 +99,14 @@ fun OtpVerifyScreenContent(
     modifier: Modifier = Modifier,
     title: String = "",
     email: String = "",
-    uiState: ProcessState = ProcessState(),
+    isLoading: Boolean = false,
+    uiState: BaseModel<Boolean>? = BaseModel.Success(true),
     checkCode: (String) -> Unit = { },
-    resetState: () -> Unit = { },
     navigateToNext: () -> Unit = { },
     navigateToBack: () -> Unit = { }
 ) {
+
+    val context = LocalContext.current
 
     val textList = listOf(
         mutableStateOf(
@@ -147,9 +156,15 @@ fun OtpVerifyScreenContent(
     )
 
     LaunchedEffect(uiState) {
-        if (uiState.success) {
+
+        if (uiState is BaseModel.Success) {
             navigateToNext()
-            resetState()
+        } else if (uiState is BaseModel.Error) {
+            Toast.makeText(
+                context,
+                uiState.error,
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
 
@@ -311,6 +326,8 @@ fun OtpVerifyScreenContent(
             }
         }
     }
+
+    LoadingLayout(visible = isLoading)
 }
 
 @Preview

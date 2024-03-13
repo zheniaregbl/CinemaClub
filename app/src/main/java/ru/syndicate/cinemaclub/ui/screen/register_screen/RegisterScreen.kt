@@ -58,7 +58,7 @@ class RegisterScreen : ProfileScreen {
             modifier = Modifier
                 .fillMaxSize(),
             navigateToNext = { email, name ->
-                navigator.push(
+                /*navigator.push(
                     OtpVerifyScreen(
                         title = "Регистрация",
                         email = email,
@@ -74,6 +74,13 @@ class RegisterScreen : ProfileScreen {
                         navigateToBack = {
                             navigator.pop()
                         }
+                    )
+                )*/
+                navigator.push(
+                    DoublePasswordScreen(
+                        title = "Регистрация",
+                        name = name,
+                        email = email
                     )
                 )
             },

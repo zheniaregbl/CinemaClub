@@ -1,5 +1,6 @@
 package ru.syndicate.cinemaclub.ui.screen.double_password_screen
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -24,6 +25,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -32,8 +34,10 @@ import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.hilt.getViewModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import ru.syndicate.cinemaclub.data.model.BaseModel
 import ru.syndicate.cinemaclub.data.model.ProcessState
 import ru.syndicate.cinemaclub.ui.common.CustomTextField
+import ru.syndicate.cinemaclub.ui.common.LoadingLayout
 import ru.syndicate.cinemaclub.ui.extansions.containsUnwantedChar
 import ru.syndicate.cinemaclub.ui.screen.auth_screen.AuthScreen
 import ru.syndicate.cinemaclub.ui.theme.BackgroundColor
@@ -103,11 +107,14 @@ data class DoublePasswordScreen(
 fun DoublePasswordScreenContent(
     modifier: Modifier = Modifier,
     title: String = "Регистрация",
-    uiState: ProcessState = ProcessState(),
+    isLoading: Boolean = false,
+    uiState: BaseModel<Boolean>? = BaseModel.Success(true),
     navigateToNext: () -> Unit = { },
     onRegister: (String) -> Unit = { },
     navigateToBack: () -> Unit = { }
 ) {
+
+    val context = LocalContext.current
 
     var passwordText by remember {
         mutableStateOf("")
@@ -117,8 +124,16 @@ fun DoublePasswordScreenContent(
     }
 
     LaunchedEffect(uiState) {
-        if (uiState.success)
+
+        if (uiState is BaseModel.Success) {
             navigateToNext()
+        } else if (uiState is BaseModel.Error) {
+            Toast.makeText(
+                context,
+                uiState.error,
+                Toast.LENGTH_LONG
+            ).show()
+        }
     }
 
     Box(
@@ -306,6 +321,8 @@ fun DoublePasswordScreenContent(
             }
         }
     }
+
+    LoadingLayout(visible = isLoading)
 }
 
 @Preview

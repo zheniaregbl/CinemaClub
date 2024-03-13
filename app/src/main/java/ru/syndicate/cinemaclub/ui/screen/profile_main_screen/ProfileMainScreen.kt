@@ -18,6 +18,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -44,24 +46,19 @@ class ProfileMainScreen : Screen {
     @Composable
     override fun Content() {
 
-        Navigator(
-            screen = ProfileInfoScreen(),
-            disposeBehavior = NavigatorDisposeBehavior(
-                disposeNestedNavigators = false,
-                disposeSteps = false
-            )
-        ) { navigator ->
+        val profileViewModel = getViewModel<ProfileViewModel>()
 
-            for (item in navigator.items) {
-                Log.d("navigatorItems", item.key)
-            }
+        val user by profileViewModel.user.collectAsState()
+
+        Navigator(
+            screen = ProfileInfoScreen()
+        ) { navigator ->
 
             val currentScreen = navigator.lastItem as ProfileScreen
 
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .navigationBarsPadding()
             ) {
 
                 Row(
@@ -121,7 +118,7 @@ class ProfileMainScreen : Screen {
                         ) {
 
                             Text(
-                                text = "0",
+                                text = user.balance.toString(),
                                 style = MaterialTheme.typography.labelMedium,
                                 fontWeight = FontWeight.Medium,
                                 fontSize = 24.sp,

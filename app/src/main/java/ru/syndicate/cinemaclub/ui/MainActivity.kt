@@ -9,6 +9,7 @@ import android.hardware.biometrics.BiometricPrompt
 import android.os.Build
 import android.os.Bundle
 import android.os.CancellationSignal
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -33,6 +34,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import ru.syndicate.cinemaclub.ui.screen.splash_screen.SplashScreen
 import ru.syndicate.cinemaclub.ui.theme.BackgroundColor
 import ru.syndicate.cinemaclub.ui.theme.CinemaClubTheme
+import ru.syndicate.cinemaclub.view_model.profile_view_model.ProfileViewModel
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
