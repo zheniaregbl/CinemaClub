@@ -110,6 +110,9 @@ dependencies {
 
     // Yandex Mapkit
     implementation("com.yandex.android:maps.mobile:4.4.0-full")
+
+    // Coil
+    implementation("io.coil-kt:coil-compose:2.6.0")
 }
 
 kapt {

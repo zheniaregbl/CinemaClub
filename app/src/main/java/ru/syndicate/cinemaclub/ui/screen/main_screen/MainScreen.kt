@@ -17,7 +17,7 @@ import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.NavigatorDisposeBehavior
 import cafe.adriel.voyager.transitions.FadeTransition
 import ru.syndicate.cinemaclub.ui.bottom_nav_bar.BottomNavBar
-import ru.syndicate.cinemaclub.ui.screen.home_screen.HomeScreen
+import ru.syndicate.cinemaclub.ui.screen.home.home_main_screen.HomeScreen
 import ru.syndicate.cinemaclub.ui.theme.BackgroundColor
 import ru.syndicate.cinemaclub.ui.theme.BarColor
 
