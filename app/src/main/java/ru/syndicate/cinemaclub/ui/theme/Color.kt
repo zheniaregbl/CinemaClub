@@ -13,8 +13,10 @@ val Pink40 = Color(0xFF7D5260)
 val BackgroundColor = Color(0xFF232323)
 val BlockBlack = Color(0xFF181818)
 val BarColor = Color(0xFF0D0D0D)
+val SearchLineColor = Color(0xFF1F1F1F)
 val CustomBlue = Color(0xFF4F71AE)
 val CustomGray = Color(0xFF7D7E80)
+val HintTextGray = Color(0xFF62666B)
 
 val TextWhite = Color(0xFFF1F1F1)
 

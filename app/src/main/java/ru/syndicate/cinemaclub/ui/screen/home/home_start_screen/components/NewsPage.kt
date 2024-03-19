@@ -28,17 +28,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import ru.syndicate.cinemaclub.core.CoreConstants
+import ru.syndicate.cinemaclub.data.model.NewsItem
 
 @Composable
 fun NewsPage(
     modifier: Modifier = Modifier,
-    url: String = "",
-    title: String = "Title",
-    description: String = "Description"
+    item: NewsItem = NewsItem()
 ) {
 
     val colorStops = arrayOf(
-        0.0f to Color.Black.copy(alpha = 0.5f),
+        0.0f to Color.Black.copy(alpha = 0.7f),
         1f to Color.Transparent
     )
 
@@ -55,7 +55,7 @@ fun NewsPage(
         AsyncImage(
             modifier = modifier,
             model = ImageRequest.Builder(LocalContext.current)
-                .data(url)
+                .data(CoreConstants.BASE_URL + item.image)
                 .crossfade(true)
                 .build(),
             contentDescription = null,
@@ -76,7 +76,7 @@ fun NewsPage(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(
-                        top = 12.dp
+                        top = 20.dp
                     )
                     .padding(
                         horizontal = 10.dp
@@ -85,7 +85,7 @@ fun NewsPage(
             ) {
 
                 Text(
-                    text = title,
+                    text = item.title,
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.Normal,
                     fontSize = 16.sp,
@@ -95,7 +95,7 @@ fun NewsPage(
                 )
 
                 Text(
-                    text = description,
+                    text = item.description,
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.Normal,
                     fontSize = 12.sp,

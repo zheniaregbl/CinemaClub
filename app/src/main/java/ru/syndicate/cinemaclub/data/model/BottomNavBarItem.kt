@@ -3,9 +3,9 @@ package ru.syndicate.cinemaclub.data.model
 import cafe.adriel.voyager.core.screen.Screen
 import ru.syndicate.cinemaclub.R
 import ru.syndicate.cinemaclub.ui.screen.home.home_main_screen.HomeScreen
-import ru.syndicate.cinemaclub.ui.screen.cinema_screen.CinemaScreen
+import ru.syndicate.cinemaclub.ui.screen.cinema.cinema_main_screen.CinemaMainScreen
 import ru.syndicate.cinemaclub.ui.screen.profile.profile_main_screen.ProfileMainScreen
-import ru.syndicate.cinemaclub.ui.screen.ticket_screen.TicketScreen
+import ru.syndicate.cinemaclub.ui.screen.ticket.ticket_screen.TicketScreen
 
 sealed class BottomNavBarItem(
     val screen: Screen,
@@ -18,8 +18,8 @@ sealed class BottomNavBarItem(
     )
 
     data object Cinema: BottomNavBarItem(
-        screen = CinemaScreen(),
-        icon = R.drawable.svg_map
+        screen = CinemaMainScreen(),
+        icon = R.drawable.svg_point
     )
 
     data object Ticket: BottomNavBarItem(

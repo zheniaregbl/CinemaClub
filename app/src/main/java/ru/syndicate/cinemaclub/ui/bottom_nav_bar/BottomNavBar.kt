@@ -1,5 +1,6 @@
 package ru.syndicate.cinemaclub.ui.bottom_nav_bar
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -45,6 +46,7 @@ fun BottomNavBar(
     }
 }
 
+@SuppressLint("UnrememberedMutableInteractionSource")
 @Composable
 fun NavBarItem(
     icon: Int,

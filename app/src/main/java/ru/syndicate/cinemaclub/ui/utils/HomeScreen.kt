@@ -10,6 +10,6 @@ interface HomeScreen : Screen {
     val backText: String
         get() = ""
 
-    val onClickBack: () -> Unit
-        get() = { }
+    val isShowSearchLine: Boolean
+        get() = true
 }

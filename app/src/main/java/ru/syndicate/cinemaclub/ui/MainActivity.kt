@@ -9,6 +9,7 @@ import android.hardware.biometrics.BiometricPrompt
 import android.os.Build
 import android.os.Bundle
 import android.os.CancellationSignal
+import android.os.StrictMode
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -30,7 +31,9 @@ import androidx.core.app.ActivityCompat
 import androidx.core.view.WindowCompat
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.transitions.FadeTransition
+import com.yandex.mapkit.MapKitFactory
 import dagger.hilt.android.AndroidEntryPoint
+import ru.syndicate.cinemaclub.BuildConfig
 import ru.syndicate.cinemaclub.ui.screen.splash_screen.SplashScreen
 import ru.syndicate.cinemaclub.ui.theme.BackgroundColor
 import ru.syndicate.cinemaclub.ui.theme.CinemaClubTheme
@@ -69,7 +72,12 @@ class MainActivity : ComponentActivity() {
 
         super.onCreate(savedInstanceState)
 
+        MapKitFactory.setApiKey(BuildConfig.MAPKIT_API_KEY)
+
         WindowCompat.setDecorFitsSystemWindows(window, false)
+
+        val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
+        StrictMode.setThreadPolicy(policy)
 
         setContent {
 

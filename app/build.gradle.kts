@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -20,6 +23,12 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        val prop = Properties().apply {
+            load(FileInputStream(File(rootProject.rootDir, "local.properties")))
+        }
+
+        buildConfigField("String", "MAPKIT_API_KEY", prop.getProperty("MAPKIT_API_KEY"))
     }
 
     buildTypes {
@@ -113,6 +122,9 @@ dependencies {
 
     // Coil
     implementation("io.coil-kt:coil-compose:2.6.0")
+
+    // ExoPlayer
+    implementation("com.google.android.exoplayer:exoplayer:2.19.1")
 }
 
 kapt {

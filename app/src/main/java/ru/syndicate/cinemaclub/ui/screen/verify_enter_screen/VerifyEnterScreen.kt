@@ -131,6 +131,10 @@ fun VerifyEnterScreenContent(
         mutableStateOf("")
     }
 
+    LaunchedEffect(Unit) {
+        startBioVerify()
+    }
+
     LaunchedEffect(codeText) {
 
         Log.d("checkPassword", codeText)

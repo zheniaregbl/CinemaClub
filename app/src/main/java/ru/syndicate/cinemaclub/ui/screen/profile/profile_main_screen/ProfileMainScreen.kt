@@ -68,7 +68,7 @@ class ProfileMainScreen : Screen {
                             color = BarColor
                         )
                         .padding(
-                            horizontal = 30.dp,
+                            horizontal = 15.dp,
                             vertical = 10.dp
                         )
                         .statusBarsPadding(),

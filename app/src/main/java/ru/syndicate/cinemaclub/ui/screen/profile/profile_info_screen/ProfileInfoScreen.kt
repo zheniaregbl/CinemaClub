@@ -1,6 +1,5 @@
 package ru.syndicate.cinemaclub.ui.screen.profile.profile_info_screen
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -9,7 +8,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -242,7 +240,7 @@ fun ProfileInfoScreenContent(
                         Icon(
                             modifier = Modifier
                                 .size(25.dp),
-                            imageVector = ImageVector.vectorResource(id = R.drawable.svg_map),
+                            imageVector = ImageVector.vectorResource(id = R.drawable.svg_point),
                             contentDescription = null,
                             tint = CustomGray
                         )

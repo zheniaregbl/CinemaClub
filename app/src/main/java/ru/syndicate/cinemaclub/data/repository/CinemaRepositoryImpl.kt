@@ -6,8 +6,14 @@ import ru.syndicate.cinemaclub.data.model.AuthBody
 import ru.syndicate.cinemaclub.data.model.AuthResponse
 import ru.syndicate.cinemaclub.data.model.BaseModel
 import ru.syndicate.cinemaclub.data.model.CheckCodeBody
+import ru.syndicate.cinemaclub.data.model.CinemaResponse
+import ru.syndicate.cinemaclub.data.model.CinemaSessionResponse
+import ru.syndicate.cinemaclub.data.model.FilmInfoResponse
+import ru.syndicate.cinemaclub.data.model.FilmsResponse
+import ru.syndicate.cinemaclub.data.model.NewsResponse
 import ru.syndicate.cinemaclub.data.model.RegisterBody
 import ru.syndicate.cinemaclub.data.model.ResetPasswordBody
+import ru.syndicate.cinemaclub.data.model.SchemeModel
 import ru.syndicate.cinemaclub.data.model.SendCodeBody
 import ru.syndicate.cinemaclub.data.remote.CinemaApi
 import ru.syndicate.cinemaclub.domain.repository.CinemaRepository
@@ -47,6 +53,45 @@ class CinemaRepositoryImpl @Inject constructor(
     override suspend fun resetPassword(body: ResetPasswordBody): BaseModel<JsonObject> {
         return request {
             cinemaApi.resetPassword(body)
+        }
+    }
+
+    override suspend fun getListFilms(): BaseModel<FilmsResponse> {
+        return request {
+            cinemaApi.getListFilms()
+        }
+    }
+
+    override suspend fun getNews(): BaseModel<NewsResponse> {
+        return request {
+            cinemaApi.getNews()
+        }
+    }
+
+    override suspend fun getCinemaInfo(): BaseModel<CinemaResponse> {
+        return request {
+            cinemaApi.getCinemaInfo()
+        }
+    }
+
+    override suspend fun getFilmSessions(
+        id: Int,
+        date: String
+    ): BaseModel<CinemaSessionResponse> {
+        return request {
+            cinemaApi.getFilmSessions(id, date)
+        }
+    }
+
+    override suspend fun getFilmInfo(id: Int): BaseModel<FilmInfoResponse> {
+        return request {
+            cinemaApi.getFilmInfo(id)
+        }
+    }
+
+    override suspend fun getSeatsBySession(id: Int): BaseModel<SchemeModel> {
+        return request {
+            cinemaApi.getSeatsBySession(id)
         }
     }
 }
