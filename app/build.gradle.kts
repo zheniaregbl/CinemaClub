@@ -125,6 +125,9 @@ dependencies {
 
     // ExoPlayer
     implementation("com.google.android.exoplayer:exoplayer:2.19.1")
+
+    // Qr
+    implementation("io.github.alexzhirkevich:qrose:1.0.1")
 }
 
 kapt {

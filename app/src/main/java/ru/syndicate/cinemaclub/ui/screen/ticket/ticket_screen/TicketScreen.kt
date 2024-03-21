@@ -36,6 +36,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import ru.syndicate.cinemaclub.R
 import ru.syndicate.cinemaclub.ui.screen.profile.profile_main_screen.ProfileMainScreen
+import ru.syndicate.cinemaclub.ui.screen.ticket.ticket_screen.components.TicketCardFuture
 import ru.syndicate.cinemaclub.ui.theme.BackgroundColor
 import ru.syndicate.cinemaclub.ui.theme.BarColor
 import ru.syndicate.cinemaclub.ui.theme.CustomBlue
@@ -59,7 +60,16 @@ class TicketScreen : Screen {
             ticketViewModel.onEvent(TicketEvent.CheckAuth)
         }
 
-        Column(
+        Box(
+            modifier = Modifier
+                .fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+
+            TicketCardFuture()
+        }
+
+        /*Column(
             modifier = Modifier
                 .fillMaxSize()
         ) {
@@ -100,7 +110,7 @@ class TicketScreen : Screen {
                         .fillMaxSize()
                 )
             }
-        }
+        }*/
     }
 }
 
